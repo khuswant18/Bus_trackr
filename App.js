@@ -13,11 +13,13 @@ export default function App() {
         <Text style={styles.headerText}>Bus Trackr</Text>
       </View>
 
-      {selectedRoute ? (
-        <RouteDetail route={selectedRoute} onBack={() => setSelectedRoute(null)} />
-      ) : (
-        <RouteList onSelect={setSelectedRoute} />
-      )}
+      <View style={styles.content}>
+        {selectedRoute ? (
+          <RouteDetail route={selectedRoute} onBack={() => setSelectedRoute(null)} />
+        ) : (
+          <RouteList onSelect={setSelectedRoute} />
+        )}
+      </View>
 
       <StatusBar style="light" />
     </View>
@@ -34,6 +36,12 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'web' ? 16 : 50,
     paddingBottom: 16,
     paddingHorizontal: 16,
+  },
+  content: {
+    flex: 1,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   headerText: {
     color: '#fff',
