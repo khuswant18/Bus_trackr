@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import RouteList from './src/RouteList';
+import RouteDetail from './src/RouteDetail';
 
 export default function App() {
+  const [selectedRoute, setSelectedRoute] = useState(null);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Bus Trackr</Text>
       </View>
 
-      <RouteList />
+      {selectedRoute ? (
+        <RouteDetail route={selectedRoute} onBack={() => setSelectedRoute(null)} />
+      ) : (
+        <RouteList onSelect={setSelectedRoute} />
+      )}
 
       <StatusBar style="light" />
     </View>

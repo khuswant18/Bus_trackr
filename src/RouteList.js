@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { routes } from './data';
 
-export default function RouteList() {
+export default function RouteList({ onSelect }) {
   const [search, setSearch] = useState('');
 
   const filtered = routes.filter((route) => {
@@ -24,13 +24,13 @@ export default function RouteList() {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No bus found</Text>}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity style={styles.card} onPress={() => onSelect(item)}>
             <Text style={styles.number}>{item.number}</Text>
             <View style={styles.info}>
               <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.stops}>{item.stops.length} stops</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
