@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bus_tmp",
-    "slug": "bus_tmp",
+    "name": "Bus Trackr",
+    "slug": "bus-trackr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
