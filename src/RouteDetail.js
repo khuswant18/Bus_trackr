@@ -29,7 +29,8 @@ export default function RouteDetail({ route, onBack }) {
       <ScrollView>
         {route.stops.map((stop, index) => (
           <View key={stop} style={styles.stopRow}>
-            <Text style={styles.stopName}>{stop}</Text>
+            <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
+            <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
             <Text style={styles.eta}>{getEta(index, busIndex, route.minutesPerStop)}</Text>
           </View>
         ))}
@@ -75,9 +76,25 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 8,
   },
+  dot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#ccc',
+    marginRight: 12,
+  },
+  activeDot: {
+    backgroundColor: '#43a047',
+  },
+  passedDot: {
+    backgroundColor: '#999',
+  },
   stopName: {
     flex: 1,
     fontSize: 16,
+  },
+  passedText: {
+    color: '#999',
   },
   eta: {
     color: '#333',
