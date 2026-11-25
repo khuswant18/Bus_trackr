@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { routes } from './data';
+import { useRoutes } from './RoutesContext';
 import { useColors } from './theme';
 
 export default function RouteList({ navigation }) {
+  const { routes, offline } = useRoutes();
   const [search, setSearch] = useState('');
   const colors = useColors();
   const styles = getStyles(colors);
@@ -15,6 +16,8 @@ export default function RouteList({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {offline && <Text style={styles.offline}>Offline - showing saved routes</Text>}
+
       <TextInput
         style={styles.input}
         placeholder="Search bus number or place"
@@ -85,6 +88,14 @@ function getStyles(colors) {
     stops: {
       color: colors.subtext,
       marginTop: 4,
+    },
+    offline: {
+      backgroundColor: '#fff3cd',
+      color: '#856404',
+      borderRadius: 10,
+      padding: 10,
+      marginBottom: 12,
+      textAlign: 'center',
     },
     empty: {
       textAlign: 'center',

@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 import RouteList from './src/RouteList';
 import RouteDetail from './src/RouteDetail';
 import { useColors } from './src/theme';
+import { RoutesProvider } from './src/RoutesContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,18 +24,20 @@ export default function App() {
   const colors = useColors();
 
   return (
-    <NavigationContainer linking={linking} theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.header },
-          headerTintColor: '#fff',
-          contentStyle: { backgroundColor: colors.background },
-        }}
-      >
-        <Stack.Screen name="Home" component={RouteList} options={{ title: 'Bus Trackr' }} />
-        <Stack.Screen name="Route" component={RouteDetail} />
-      </Stack.Navigator>
-      <StatusBar style="light" />
-    </NavigationContainer>
+    <RoutesProvider>
+      <NavigationContainer linking={linking} theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: colors.header },
+            headerTintColor: '#fff',
+            contentStyle: { backgroundColor: colors.background },
+          }}
+        >
+          <Stack.Screen name="Home" component={RouteList} options={{ title: 'Bus Trackr' }} />
+          <Stack.Screen name="Route" component={RouteDetail} />
+        </Stack.Navigator>
+        <StatusBar style="light" />
+      </NavigationContainer>
+    </RoutesProvider>
   );
 }

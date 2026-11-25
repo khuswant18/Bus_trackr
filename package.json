@@ -6,6 +6,7 @@
     "@react-navigation/native": "^7.5.2",
     "@react-navigation/native-stack": "^7.21.1",
     "expo": "~58.0.26",
+    "expo-constants": "~58.0.16",
     "expo-status-bar": "~58.0.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
@@ -19,7 +20,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
+    "test": "jest",
+    "server": "node server/index.js"
   },
   "private": true,
   "devDependencies": {
@@ -28,6 +30,9 @@
     "jest-expo": "~58.0.15"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": [
+      "./jest.setup.js"
+    ]
   }
 }

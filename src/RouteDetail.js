@@ -1,9 +1,12 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { routes, getEta, nextIndex } from './data';
+import { getEta, nextIndex } from './data';
+import { useRoutes } from './RoutesContext';
+import { fetchBusIndex } from './api';
 import { useColors } from './theme';
 
 export default function RouteDetail({ route, navigation }) {
+  const { routes, offline } = useRoutes();
   const bus = routes.find((item) => item.id === route.params.id);
   const [busIndex, setBusIndex] = useState(0);
   const styles = getStyles(useColors());
@@ -15,12 +18,25 @@ export default function RouteDetail({ route, navigation }) {
   useEffect(() => {
     if (!bus) return;
 
-    const timer = setInterval(() => {
+    function moveLocally() {
       setBusIndex((index) => nextIndex(index, bus.stops.length));
-    }, 5000);
+    }
+
+    async function update() {
+      if (offline) return moveLocally();
+
+      try {
+        setBusIndex(await fetchBusIndex(bus.id));
+      } catch {
+        moveLocally();
+      }
+    }
+
+    if (!offline) update();
+    const timer = setInterval(update, 5000);
 
     return () => clearInterval(timer);
-  }, [bus]);
+  }, [bus, offline]);
 
   if (!bus) {
     return (

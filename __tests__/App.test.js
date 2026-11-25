@@ -1,8 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import App from '../App';
+import routes from '../src/routes.json';
 
 beforeEach(() => {
   jest.useFakeTimers();
+  fetch.mockImplementation(() => Promise.reject(new Error('offline')));
 });
 
 afterEach(() => {
@@ -43,4 +45,24 @@ test('opening a route shows stops and the bus moves', async () => {
   expect(screen.getByText('Now at: Main Market')).toBeTruthy();
   expect(screen.getByText('Passed')).toBeTruthy();
   expect(screen.getByText('12 min')).toBeTruthy();
+});
+
+test('shows offline message when server is not reachable', async () => {
+  await render(<App />);
+  expect(await screen.findByText('Offline - showing saved routes')).toBeTruthy();
+});
+
+test('uses bus position from the server', async () => {
+  fetch.mockImplementation((url) =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(url.endsWith('/routes') ? routes : { busIndex: 2 }),
+    })
+  );
+
+  await render(<App />);
+  await fireEvent.press(screen.getByText('City Center - Railway Station'));
+
+  expect(await screen.findByText('Now at: Clock Tower')).toBeTruthy();
+  expect(screen.queryByText('Offline - showing saved routes')).toBeNull();
 });
