@@ -118,3 +118,25 @@ test('switching direction reverses the stops', async () => {
   expect(screen.getByText('Now at: Lake View')).toBeTruthy();
   expect(screen.getByText('Next buses from Lake View')).toBeTruthy();
 });
+
+test('picking a stop shows when the bus arrives there', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByText('City Center - Railway Station'));
+
+  expect(screen.getByText('Tap a stop to pick it as your stop')).toBeTruthy();
+
+  await fireEvent.press(screen.getByText('Bus Stand'));
+
+  expect(screen.getByText('Your stop: Bus Stand')).toBeTruthy();
+  expect(screen.getByText('Your bus arrives in 12 min')).toBeTruthy();
+
+  await act(() => {
+    jest.advanceTimersByTime(5000);
+  });
+
+  expect(screen.getByText('Your bus arrives in 8 min')).toBeTruthy();
+
+  await fireEvent.press(screen.getByText('Bus Stand'));
+
+  expect(screen.queryByText('Your stop: Bus Stand')).toBeNull();
+});

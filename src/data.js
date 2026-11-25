@@ -8,6 +8,12 @@ export function getEta(stopIndex, busIndex, minutesPerStop) {
   return (stopIndex - busIndex) * minutesPerStop + ' min';
 }
 
+export function getStopMessage(stopIndex, busIndex, minutesPerStop) {
+  if (stopIndex < busIndex) return 'Bus has passed your stop';
+  if (stopIndex === busIndex) return 'Bus is at your stop';
+  return 'Your bus arrives in ' + (stopIndex - busIndex) * minutesPerStop + ' min';
+}
+
 export function nextIndex(busIndex, totalStops) {
   return busIndex + 1 < totalStops ? busIndex + 1 : 0;
 }

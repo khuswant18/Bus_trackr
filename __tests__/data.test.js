@@ -1,4 +1,4 @@
-import { getEta, nextIndex, getNextBuses, routes } from '../src/data';
+import { getEta, nextIndex, getNextBuses, getStopMessage, routes } from '../src/data';
 
 test('shows passed for stops behind the bus', () => {
   expect(getEta(0, 2, 4)).toBe('Passed');
@@ -48,4 +48,10 @@ test('shows fewer buses near the end of the day', () => {
 test('shows no buses after the last one', () => {
   const route = { firstBus: '06:00', lastBus: '22:00', every: 15 };
   expect(getNextBuses(route, new Date(2026, 0, 1, 23, 0))).toEqual([]);
+});
+
+test('tells how long until the bus reaches your stop', () => {
+  expect(getStopMessage(3, 1, 4)).toBe('Your bus arrives in 8 min');
+  expect(getStopMessage(1, 1, 4)).toBe('Bus is at your stop');
+  expect(getStopMessage(0, 1, 4)).toBe('Bus has passed your stop');
 });

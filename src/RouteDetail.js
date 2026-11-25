@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { getEta, nextIndex, getNextBuses } from './data';
+import { getEta, nextIndex, getNextBuses, getStopMessage } from './data';
 import { useRoutes } from './RoutesContext';
 import { fetchBusIndex } from './api';
 import { useColors } from './theme';
@@ -10,6 +10,7 @@ export default function RouteDetail({ route, navigation }) {
   const bus = routes.find((item) => item.id === route.params.id);
   const [busIndex, setBusIndex] = useState(0);
   const [reversed, setReversed] = useState(false);
+  const [myStop, setMyStop] = useState(null);
   const styles = getStyles(useColors());
 
   useLayoutEffect(() => {
@@ -49,6 +50,7 @@ export default function RouteDetail({ route, navigation }) {
 
   const stops = reversed ? [...bus.stops].reverse() : bus.stops;
   const nextBuses = getNextBuses(bus, new Date());
+  const myIndex = stops.indexOf(myStop);
 
   function switchDirection() {
     setReversed(!reversed);
@@ -70,6 +72,15 @@ export default function RouteDetail({ route, navigation }) {
         <Text style={styles.statusText}>Now at: {stops[busIndex]}</Text>
       </View>
 
+      {myIndex >= 0 ? (
+        <View style={styles.myStop}>
+          <Text style={styles.myStopTitle}>Your stop: {myStop}</Text>
+          <Text style={styles.myStopText}>{getStopMessage(myIndex, busIndex, bus.minutesPerStop)}</Text>
+        </View>
+      ) : (
+        <Text style={styles.hint}>Tap a stop to pick it as your stop</Text>
+      )}
+
       <View style={styles.timetable}>
         <Text style={styles.timetableTitle}>Next buses from {stops[0]}</Text>
         <Text style={styles.timetableText}>
@@ -82,11 +93,15 @@ export default function RouteDetail({ route, navigation }) {
 
       <ScrollView>
         {stops.map((stop, index) => (
-          <View key={stop} style={styles.stopRow}>
+          <TouchableOpacity
+            key={stop}
+            style={[styles.stopRow, stop === myStop && styles.myStopRow]}
+            onPress={() => setMyStop(stop === myStop ? null : stop)}
+          >
             <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
             <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
             <Text style={styles.eta}>{getEta(index, busIndex, bus.minutesPerStop)}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -140,6 +155,30 @@ function getStyles(colors) {
       color: '#fff',
       fontSize: 16,
       fontWeight: '600',
+    },
+    myStop: {
+      backgroundColor: colors.green,
+      borderRadius: 10,
+      padding: 14,
+      marginBottom: 16,
+    },
+    myStopTitle: {
+      color: '#fff',
+    },
+    myStopText: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginTop: 4,
+    },
+    hint: {
+      color: colors.muted,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    myStopRow: {
+      borderWidth: 2,
+      borderColor: colors.green,
     },
     timetable: {
       backgroundColor: colors.card,
