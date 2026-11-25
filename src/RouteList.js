@@ -22,6 +22,7 @@ export default function RouteList() {
       <FlatList
         data={filtered}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={<Text style={styles.empty}>No bus found</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.number}>{item.number}</Text>
@@ -74,5 +75,10 @@ const styles = StyleSheet.create({
   stops: {
     color: '#777',
     marginTop: 4,
+  },
+  empty: {
+    textAlign: 'center',
+    color: '#777',
+    marginTop: 40,
   },
 });
