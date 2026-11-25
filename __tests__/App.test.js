@@ -1,8 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import App from '../App';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import routes from '../src/routes.json';
 
-beforeEach(() => {
+beforeEach(async () => {
+  await AsyncStorage.clear();
   jest.useFakeTimers();
   fetch.mockImplementation(() => Promise.reject(new Error('offline')));
 });
@@ -81,4 +83,22 @@ test('pull to refresh loads routes again', async () => {
   await fireEvent(screen.getByTestId('route-list'), 'refresh');
 
   expect(screen.queryByText('Offline - showing saved routes')).toBeNull();
+});
+
+test('starring a route moves it to the top and saves it', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByTestId('star-3'));
+
+  const names = screen.getAllByText(/ - [A-Z]/).map((node) => node.props.children);
+  expect(names[0]).toBe('Old Town - Lake View');
+  expect(await AsyncStorage.getItem('favorites')).toBe('["3"]');
+});
+
+test('loads saved favourites on start', async () => {
+  await AsyncStorage.setItem('favorites', '["2"]');
+  await render(<App />);
+
+  expect(await screen.findByText('★')).toBeTruthy();
+  const names = screen.getAllByText(/ - [A-Z]/).map((node) => node.props.children);
+  expect(names[0]).toBe('University - Airport');
 });

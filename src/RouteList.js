@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRoutes } from './RoutesContext';
 import { useColors } from './theme';
+import { useFavorites, sortByFavorites } from './favorites';
 
 export default function RouteList({ navigation }) {
   const { routes, offline, refreshing, refresh } = useRoutes();
+  const { favorites, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState('');
   const colors = useColors();
   const styles = getStyles(colors);
 
-  const filtered = routes.filter((route) => {
+  const filtered = sortByFavorites(routes, favorites).filter((route) => {
     const text = search.toLowerCase();
     return route.number.toLowerCase().includes(text) || route.name.toLowerCase().includes(text);
   });
@@ -40,6 +42,9 @@ export default function RouteList({ navigation }) {
               <Text style={styles.name}>{item.name}</Text>
               <Text style={styles.stops}>{item.stops.length} stops</Text>
             </View>
+            <TouchableOpacity testID={'star-' + item.id} onPress={() => toggleFavorite(item.id)}>
+              <Text style={styles.star}>{favorites.includes(item.id) ? '★' : '☆'}</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
         )}
       />
@@ -91,6 +96,11 @@ function getStyles(colors) {
     stops: {
       color: colors.subtext,
       marginTop: 4,
+    },
+    star: {
+      fontSize: 26,
+      color: '#f5a623',
+      paddingLeft: 12,
     },
     offline: {
       backgroundColor: '#fff3cd',
