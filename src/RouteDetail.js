@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { getEta } from './data';
 
 export default function RouteDetail({ route, onBack }) {
+  const [busIndex] = useState(0);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onBack}>
@@ -14,6 +18,7 @@ export default function RouteDetail({ route, onBack }) {
         {route.stops.map((stop, index) => (
           <View key={stop} style={styles.stopRow}>
             <Text style={styles.stopName}>{stop}</Text>
+            <Text style={styles.eta}>{getEta(index, busIndex, route.minutesPerStop)}</Text>
           </View>
         ))}
       </ScrollView>
@@ -50,5 +55,9 @@ const styles = StyleSheet.create({
   stopName: {
     flex: 1,
     fontSize: 16,
+  },
+  eta: {
+    color: '#333',
+    fontWeight: '600',
   },
 });
