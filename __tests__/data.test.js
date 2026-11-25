@@ -1,4 +1,13 @@
-import { getEta, nextIndex, getNextBuses, getStopMessage, routes } from '../src/data';
+import {
+  getEta,
+  nextIndex,
+  getNextBuses,
+  getStopMessage,
+  getDistance,
+  findNearestStop,
+  formatDistance,
+  routes,
+} from '../src/data';
 
 test('shows passed for stops behind the bus', () => {
   expect(getEta(0, 2, 4)).toBe('Passed');
@@ -64,4 +73,20 @@ test('every stop has a name and location', () => {
       expect(typeof stop.lng).toBe('number');
     });
   });
+});
+
+test('calculates distance between two points', () => {
+  expect(getDistance(26.9124, 75.7873, 26.9124, 75.7873)).toBe(0);
+  expect(getDistance(26.9124, 75.7873, 26.94, 75.818)).toBeCloseTo(4.3, 1);
+});
+
+test('finds the nearest stop', () => {
+  const nearest = findNearestStop(routes, 26.8245, 75.8118);
+  expect(nearest.stop).toBe('Airport');
+  expect(nearest.route.number).toBe('7');
+});
+
+test('formats distance in metres or kilometres', () => {
+  expect(formatDistance(0.25)).toBe('250 m');
+  expect(formatDistance(3.456)).toBe('3.5 km');
 });

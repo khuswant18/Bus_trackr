@@ -2,6 +2,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import App from '../App';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import * as Location from 'expo-location';
 import routes from '../src/routes.json';
 
 beforeEach(async () => {
@@ -172,4 +173,24 @@ test('shows and hides the map', async () => {
 
   await fireEvent.press(screen.getByText('Hide map'));
   expect(screen.queryByTestId('route-map')).toBeNull();
+});
+
+test('finds the nearest stop and opens its route', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByText('Find nearest stop'));
+
+  expect(await screen.findByText('Clock Tower (24 m)')).toBeTruthy();
+  expect(screen.getByText('Bus 12A')).toBeTruthy();
+
+  await fireEvent.press(screen.getByText('Clock Tower (24 m)'));
+  expect(screen.getByText('Now at: City Center')).toBeTruthy();
+});
+
+test('shows a message when location permission is denied', async () => {
+  Location.requestForegroundPermissionsAsync.mockResolvedValueOnce({ granted: false });
+
+  await render(<App />);
+  await fireEvent.press(screen.getByText('Find nearest stop'));
+
+  expect(await screen.findByText('Location permission denied')).toBeTruthy();
 });

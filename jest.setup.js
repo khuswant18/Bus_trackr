@@ -17,3 +17,8 @@ jest.mock('react-native-maps', () => {
   const Mock = (props) => React.createElement(View, props);
   return { __esModule: true, default: Mock, Marker: Mock, Polyline: Mock };
 });
+
+jest.mock('expo-location', () => ({
+  requestForegroundPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+  getCurrentPositionAsync: jest.fn(() => Promise.resolve({ coords: { latitude: 26.9262, longitude: 75.8031 } })),
+}));

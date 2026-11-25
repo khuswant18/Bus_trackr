@@ -1,13 +1,17 @@
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRoutes } from './RoutesContext';
+import * as Location from 'expo-location';
 import { useColors } from './theme';
+import { findNearestStop, formatDistance } from './data';
 import { useFavorites, sortByFavorites } from './favorites';
 
 export default function RouteList({ navigation }) {
   const { routes, offline, refreshing, refresh } = useRoutes();
   const { favorites, toggleFavorite } = useFavorites();
   const [search, setSearch] = useState('');
+  const [nearest, setNearest] = useState(null);
+  const [locationError, setLocationError] = useState('');
   const colors = useColors();
   const styles = getStyles(colors);
 
@@ -15,6 +19,23 @@ export default function RouteList({ navigation }) {
     const text = search.toLowerCase();
     return route.number.toLowerCase().includes(text) || route.name.toLowerCase().includes(text);
   });
+
+  async function findNearest() {
+    setLocationError('');
+
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    if (!granted) {
+      setLocationError('Location permission denied');
+      return;
+    }
+
+    try {
+      const position = await Location.getCurrentPositionAsync();
+      setNearest(findNearestStop(routes, position.coords.latitude, position.coords.longitude));
+    } catch {
+      setLocationError('Could not get your location');
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -27,6 +48,22 @@ export default function RouteList({ navigation }) {
         value={search}
         onChangeText={setSearch}
       />
+
+      {nearest ? (
+        <TouchableOpacity style={styles.nearest} onPress={() => navigation.navigate('Route', { id: nearest.route.id })}>
+          <Text style={styles.nearestTitle}>Nearest stop</Text>
+          <Text style={styles.nearestText}>
+            {nearest.stop} ({formatDistance(nearest.distance)})
+          </Text>
+          <Text style={styles.nearestTitle}>Bus {nearest.route.number}</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.locationButton} onPress={findNearest}>
+          <Text style={styles.locationText}>Find nearest stop</Text>
+        </TouchableOpacity>
+      )}
+
+      {locationError !== '' && <Text style={styles.error}>{locationError}</Text>}
 
       <FlatList
         testID="route-list"
@@ -96,6 +133,38 @@ function getStyles(colors) {
     stops: {
       color: colors.subtext,
       marginTop: 4,
+    },
+    locationButton: {
+      borderWidth: 1,
+      borderColor: colors.primary,
+      borderRadius: 10,
+      padding: 12,
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    locationText: {
+      color: colors.primary,
+      fontWeight: '600',
+    },
+    nearest: {
+      backgroundColor: colors.green,
+      borderRadius: 10,
+      padding: 14,
+      marginBottom: 16,
+    },
+    nearestTitle: {
+      color: '#fff',
+    },
+    nearestText: {
+      color: '#fff',
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginVertical: 4,
+    },
+    error: {
+      color: '#e53935',
+      textAlign: 'center',
+      marginBottom: 12,
     },
     star: {
       fontSize: 26,
