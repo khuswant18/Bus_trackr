@@ -66,3 +66,19 @@ test('uses bus position from the server', async () => {
   expect(await screen.findByText('Now at: Clock Tower')).toBeTruthy();
   expect(screen.queryByText('Offline - showing saved routes')).toBeNull();
 });
+
+test('pull to refresh loads routes again', async () => {
+  await render(<App />);
+  expect(await screen.findByText('Offline - showing saved routes')).toBeTruthy();
+
+  fetch.mockImplementation((url) =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(url.endsWith('/routes') ? routes : { busIndex: 0 }),
+    })
+  );
+
+  await fireEvent(screen.getByTestId('route-list'), 'refresh');
+
+  expect(screen.queryByText('Offline - showing saved routes')).toBeNull();
+});

@@ -4,7 +4,7 @@ import { useRoutes } from './RoutesContext';
 import { useColors } from './theme';
 
 export default function RouteList({ navigation }) {
-  const { routes, offline } = useRoutes();
+  const { routes, offline, refreshing, refresh } = useRoutes();
   const [search, setSearch] = useState('');
   const colors = useColors();
   const styles = getStyles(colors);
@@ -27,8 +27,11 @@ export default function RouteList({ navigation }) {
       />
 
       <FlatList
+        testID="route-list"
         data={filtered}
         keyExtractor={(item) => item.id}
+        refreshing={refreshing}
+        onRefresh={refresh}
         ListEmptyComponent={<Text style={styles.empty}>No bus found</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Route', { id: item.id })}>
