@@ -1,9 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { getEta } from './data';
+import { getEta, nextIndex } from './data';
 
 export default function RouteDetail({ route, onBack }) {
-  const [busIndex] = useState(0);
+  const [busIndex, setBusIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBusIndex((index) => nextIndex(index, route.stops.length));
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [route]);
 
   return (
     <View style={styles.container}>
@@ -13,6 +21,10 @@ export default function RouteDetail({ route, onBack }) {
 
       <Text style={styles.title}>Bus {route.number}</Text>
       <Text style={styles.subtitle}>{route.name}</Text>
+
+      <View style={styles.status}>
+        <Text style={styles.statusText}>Now at: {route.stops[busIndex]}</Text>
+      </View>
 
       <ScrollView>
         {route.stops.map((stop, index) => (
@@ -43,6 +55,17 @@ const styles = StyleSheet.create({
   subtitle: {
     color: '#555',
     marginBottom: 16,
+  },
+  status: {
+    backgroundColor: '#1e88e5',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 16,
+  },
+  statusText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   stopRow: {
     flexDirection: 'row',
