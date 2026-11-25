@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { routes } from './data';
 
-export default function RouteList({ onSelect }) {
+export default function RouteList({ navigation }) {
   const [search, setSearch] = useState('');
 
   const filtered = routes.filter((route) => {
@@ -25,7 +25,7 @@ export default function RouteList({ onSelect }) {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>No bus found</Text>}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => onSelect(item)}>
+          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Route', { id: item.id })}>
             <Text style={styles.number}>{item.number}</Text>
             <View style={styles.info}>
               <Text style={styles.name}>{item.name}</Text>
@@ -42,6 +42,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   input: {
     backgroundColor: '#fff',

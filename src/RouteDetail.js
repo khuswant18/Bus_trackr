@@ -1,37 +1,47 @@
-import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import { getEta, nextIndex } from './data';
+import { useState, useEffect, useLayoutEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { routes, getEta, nextIndex } from './data';
 
-export default function RouteDetail({ route, onBack }) {
+export default function RouteDetail({ route, navigation }) {
+  const bus = routes.find((item) => item.id === route.params.id);
   const [busIndex, setBusIndex] = useState(0);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: bus ? 'Bus ' + bus.number : 'Bus not found' });
+  }, [navigation, bus]);
+
   useEffect(() => {
+    if (!bus) return;
+
     const timer = setInterval(() => {
-      setBusIndex((index) => nextIndex(index, route.stops.length));
+      setBusIndex((index) => nextIndex(index, bus.stops.length));
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [route]);
+  }, [bus]);
+
+  if (!bus) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.subtitle}>This bus does not exist</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onBack}>
-        <Text style={styles.back}>{'< Back'}</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Bus {route.number}</Text>
-      <Text style={styles.subtitle}>{route.name}</Text>
+      <Text style={styles.subtitle}>{bus.name}</Text>
 
       <View style={styles.status}>
-        <Text style={styles.statusText}>Now at: {route.stops[busIndex]}</Text>
+        <Text style={styles.statusText}>Now at: {bus.stops[busIndex]}</Text>
       </View>
 
       <ScrollView>
-        {route.stops.map((stop, index) => (
+        {bus.stops.map((stop, index) => (
           <View key={stop} style={styles.stopRow}>
             <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
             <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
-            <Text style={styles.eta}>{getEta(index, busIndex, route.minutesPerStop)}</Text>
+            <Text style={styles.eta}>{getEta(index, busIndex, bus.minutesPerStop)}</Text>
           </View>
         ))}
       </ScrollView>
@@ -43,18 +53,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  back: {
-    color: '#1e88e5',
-    fontSize: 16,
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   subtitle: {
     color: '#555',
+    fontSize: 16,
     marginBottom: 16,
   },
   status: {

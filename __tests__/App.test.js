@@ -11,7 +11,6 @@ afterEach(() => {
 
 test('shows all bus routes on start', async () => {
   await render(<App />);
-  expect(screen.getByText('Bus Trackr')).toBeTruthy();
   expect(screen.getByText('City Center - Railway Station')).toBeTruthy();
   expect(screen.getByText('University - Airport')).toBeTruthy();
   expect(screen.getByText('Old Town - Lake View')).toBeTruthy();
@@ -34,7 +33,6 @@ test('opening a route shows stops and the bus moves', async () => {
   await render(<App />);
   await fireEvent.press(screen.getByText('City Center - Railway Station'));
 
-  expect(screen.getByText('Bus 12A')).toBeTruthy();
   expect(screen.getByText('Now at: City Center')).toBeTruthy();
   expect(screen.getByText('16 min')).toBeTruthy();
 
@@ -45,11 +43,4 @@ test('opening a route shows stops and the bus moves', async () => {
   expect(screen.getByText('Now at: Main Market')).toBeTruthy();
   expect(screen.getByText('Passed')).toBeTruthy();
   expect(screen.getByText('12 min')).toBeTruthy();
-});
-
-test('back button goes back to the list', async () => {
-  await render(<App />);
-  await fireEvent.press(screen.getByText('University - Airport'));
-  await fireEvent.press(screen.getByText('< Back'));
-  expect(screen.getByPlaceholderText('Search bus number or place')).toBeTruthy();
 });

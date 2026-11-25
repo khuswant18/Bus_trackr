@@ -1,51 +1,35 @@
-import { useState } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, Text, View } from 'react-native';
 import RouteList from './src/RouteList';
 import RouteDetail from './src/RouteDetail';
 
+const Stack = createNativeStackNavigator();
+
+const linking = {
+  prefixes: [],
+  config: {
+    screens: {
+      Home: '',
+      Route: 'route/:id',
+    },
+  },
+};
+
 export default function App() {
-  const [selectedRoute, setSelectedRoute] = useState(null);
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Bus Trackr</Text>
-      </View>
-
-      <View style={styles.content}>
-        {selectedRoute ? (
-          <RouteDetail route={selectedRoute} onBack={() => setSelectedRoute(null)} />
-        ) : (
-          <RouteList onSelect={setSelectedRoute} />
-        )}
-      </View>
-
+    <NavigationContainer linking={linking}>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: { backgroundColor: '#1e88e5' },
+          headerTintColor: '#fff',
+          contentStyle: { backgroundColor: '#f2f4f7' },
+        }}
+      >
+        <Stack.Screen name="Home" component={RouteList} options={{ title: 'Bus Trackr' }} />
+        <Stack.Screen name="Route" component={RouteDetail} />
+      </Stack.Navigator>
       <StatusBar style="light" />
-    </View>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f2f4f7',
-  },
-  header: {
-    backgroundColor: '#1e88e5',
-    paddingTop: Platform.OS === 'web' ? 16 : 50,
-    paddingBottom: 16,
-    paddingHorizontal: 16,
-  },
-  content: {
-    flex: 1,
-    width: '100%',
-    maxWidth: 600,
-    alignSelf: 'center',
-  },
-  headerText: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-});
