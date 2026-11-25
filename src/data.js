@@ -21,3 +21,9 @@ export const routes = [
     stops: ['Old Town', 'Temple Road', 'Park Street', 'Lake View'],
   },
 ];
+
+export function getEta(stopIndex, busIndex, minutesPerStop) {
+  if (stopIndex < busIndex) return 'Passed';
+  if (stopIndex === busIndex) return 'Bus is here';
+  return (stopIndex - busIndex) * minutesPerStop + ' min';
+}
