@@ -15,6 +15,7 @@ export default function RouteList({ onSelect }) {
       <TextInput
         style={styles.input}
         placeholder="Search bus number or place"
+        placeholderTextColor="#999"
         value={search}
         onChangeText={setSearch}
       />
