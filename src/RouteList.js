@@ -1,11 +1,26 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, TextInput, FlatList, StyleSheet } from 'react-native';
 import { routes } from './data';
 
 export default function RouteList() {
+  const [search, setSearch] = useState('');
+
+  const filtered = routes.filter((route) => {
+    const text = search.toLowerCase();
+    return route.number.toLowerCase().includes(text) || route.name.toLowerCase().includes(text);
+  });
+
   return (
     <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Search bus number or place"
+        value={search}
+        onChangeText={setSearch}
+      />
+
       <FlatList
-        data={routes}
+        data={filtered}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.card}>
@@ -25,6 +40,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   card: {
     flexDirection: 'row',
