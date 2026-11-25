@@ -39,6 +39,8 @@ test('opening a route shows stops and the bus moves', async () => {
 
   expect(screen.getByText('Now at: City Center')).toBeTruthy();
   expect(screen.getByText('16 min')).toBeTruthy();
+  expect(screen.getByText('Next buses from City Center')).toBeTruthy();
+  expect(screen.getByText('Every 15 min, 06:00 to 22:00')).toBeTruthy();
 
   await act(() => {
     jest.advanceTimersByTime(5000);

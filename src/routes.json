@@ -4,6 +4,9 @@
     "number": "12A",
     "name": "City Center - Railway Station",
     "minutesPerStop": 4,
+    "firstBus": "06:00",
+    "lastBus": "22:00",
+    "every": 15,
     "stops": ["City Center", "Main Market", "Clock Tower", "Bus Stand", "Railway Station"]
   },
   {
@@ -11,6 +14,9 @@
     "number": "7",
     "name": "University - Airport",
     "minutesPerStop": 6,
+    "firstBus": "05:30",
+    "lastBus": "23:30",
+    "every": 30,
     "stops": ["University", "Hospital", "Tech Park", "Highway Gate", "Airport"]
   },
   {
@@ -18,6 +24,9 @@
     "number": "21",
     "name": "Old Town - Lake View",
     "minutesPerStop": 3,
+    "firstBus": "07:00",
+    "lastBus": "21:00",
+    "every": 20,
     "stops": ["Old Town", "Temple Road", "Park Street", "Lake View"]
   }
 ]

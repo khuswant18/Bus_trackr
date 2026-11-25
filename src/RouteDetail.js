@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { getEta, nextIndex } from './data';
+import { getEta, nextIndex, getNextBuses } from './data';
 import { useRoutes } from './RoutesContext';
 import { fetchBusIndex } from './api';
 import { useColors } from './theme';
@@ -46,12 +46,24 @@ export default function RouteDetail({ route, navigation }) {
     );
   }
 
+  const nextBuses = getNextBuses(bus, new Date());
+
   return (
     <View style={styles.container}>
       <Text style={styles.subtitle}>{bus.name}</Text>
 
       <View style={styles.status}>
         <Text style={styles.statusText}>Now at: {bus.stops[busIndex]}</Text>
+      </View>
+
+      <View style={styles.timetable}>
+        <Text style={styles.timetableTitle}>Next buses from {bus.stops[0]}</Text>
+        <Text style={styles.timetableText}>
+          {nextBuses.length > 0 ? nextBuses.join('   ') : 'No more buses today'}
+        </Text>
+        <Text style={styles.timetableInfo}>
+          Every {bus.every} min, {bus.firstBus} to {bus.lastBus}
+        </Text>
       </View>
 
       <ScrollView>
@@ -91,6 +103,25 @@ function getStyles(colors) {
       color: '#fff',
       fontSize: 16,
       fontWeight: '600',
+    },
+    timetable: {
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      padding: 14,
+      marginBottom: 16,
+    },
+    timetableTitle: {
+      color: colors.subtext,
+      marginBottom: 6,
+    },
+    timetableText: {
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    timetableInfo: {
+      color: colors.muted,
+      marginTop: 6,
     },
     stopRow: {
       flexDirection: 'row',
