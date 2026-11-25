@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { getEta, nextIndex, getNextBuses } from './data';
 import { useRoutes } from './RoutesContext';
 import { fetchBusIndex } from './api';
@@ -9,6 +9,7 @@ export default function RouteDetail({ route, navigation }) {
   const { routes, offline } = useRoutes();
   const bus = routes.find((item) => item.id === route.params.id);
   const [busIndex, setBusIndex] = useState(0);
+  const [reversed, setReversed] = useState(false);
   const styles = getStyles(useColors());
 
   useLayoutEffect(() => {
@@ -46,18 +47,31 @@ export default function RouteDetail({ route, navigation }) {
     );
   }
 
+  const stops = reversed ? [...bus.stops].reverse() : bus.stops;
   const nextBuses = getNextBuses(bus, new Date());
+
+  function switchDirection() {
+    setReversed(!reversed);
+    setBusIndex(0);
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.subtitle}>{bus.name}</Text>
 
+      <View style={styles.directionRow}>
+        <Text style={styles.direction}>Towards {stops[stops.length - 1]}</Text>
+        <TouchableOpacity style={styles.switchButton} onPress={switchDirection}>
+          <Text style={styles.switchText}>Switch direction</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.status}>
-        <Text style={styles.statusText}>Now at: {bus.stops[busIndex]}</Text>
+        <Text style={styles.statusText}>Now at: {stops[busIndex]}</Text>
       </View>
 
       <View style={styles.timetable}>
-        <Text style={styles.timetableTitle}>Next buses from {bus.stops[0]}</Text>
+        <Text style={styles.timetableTitle}>Next buses from {stops[0]}</Text>
         <Text style={styles.timetableText}>
           {nextBuses.length > 0 ? nextBuses.join('   ') : 'No more buses today'}
         </Text>
@@ -67,7 +81,7 @@ export default function RouteDetail({ route, navigation }) {
       </View>
 
       <ScrollView>
-        {bus.stops.map((stop, index) => (
+        {stops.map((stop, index) => (
           <View key={stop} style={styles.stopRow}>
             <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
             <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
@@ -91,7 +105,30 @@ function getStyles(colors) {
     subtitle: {
       color: colors.subtext,
       fontSize: 16,
+      marginBottom: 8,
+    },
+    directionRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
       marginBottom: 16,
+    },
+    direction: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '600',
+      flex: 1,
+    },
+    switchButton: {
+      borderWidth: 1,
+      borderColor: colors.primary,
+      borderRadius: 8,
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+    },
+    switchText: {
+      color: colors.primary,
+      fontWeight: '600',
     },
     status: {
       backgroundColor: colors.primary,

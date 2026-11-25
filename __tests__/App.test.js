@@ -104,3 +104,17 @@ test('loads saved favourites on start', async () => {
   const names = screen.getAllByText(/ - [A-Z]/).map((node) => node.props.children);
   expect(names[0]).toBe('University - Airport');
 });
+
+test('switching direction reverses the stops', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByText('Old Town - Lake View'));
+
+  expect(screen.getByText('Towards Lake View')).toBeTruthy();
+  expect(screen.getByText('Now at: Old Town')).toBeTruthy();
+
+  await fireEvent.press(screen.getByText('Switch direction'));
+
+  expect(screen.getByText('Towards Old Town')).toBeTruthy();
+  expect(screen.getByText('Now at: Lake View')).toBeTruthy();
+  expect(screen.getByText('Next buses from Lake View')).toBeTruthy();
+});
