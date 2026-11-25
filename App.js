@@ -1,8 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import { useColorScheme } from 'react-native';
 import RouteList from './src/RouteList';
 import RouteDetail from './src/RouteDetail';
+import { useColors } from './src/theme';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,13 +19,16 @@ const linking = {
 };
 
 export default function App() {
+  const scheme = useColorScheme();
+  const colors = useColors();
+
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer linking={linking} theme={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: '#1e88e5' },
+          headerStyle: { backgroundColor: colors.header },
           headerTintColor: '#fff',
-          contentStyle: { backgroundColor: '#f2f4f7' },
+          contentStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen name="Home" component={RouteList} options={{ title: 'Bus Trackr' }} />

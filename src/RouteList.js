@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { routes } from './data';
+import { useColors } from './theme';
 
 export default function RouteList({ navigation }) {
   const [search, setSearch] = useState('');
+  const colors = useColors();
+  const styles = getStyles(colors);
 
   const filtered = routes.filter((route) => {
     const text = search.toLowerCase();
@@ -15,7 +18,7 @@ export default function RouteList({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Search bus number or place"
-        placeholderTextColor="#999"
+        placeholderTextColor={colors.muted}
         value={search}
         onChangeText={setSearch}
       />
@@ -38,51 +41,55 @@ export default function RouteList({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    width: '100%',
-    maxWidth: 600,
-    alignSelf: 'center',
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 16,
-    marginBottom: 12,
-  },
-  number: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#1e88e5',
-    width: 60,
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  stops: {
-    color: '#777',
-    marginTop: 4,
-  },
-  empty: {
-    textAlign: 'center',
-    color: '#777',
-    marginTop: 40,
-  },
-});
+function getStyles(colors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      width: '100%',
+      maxWidth: 600,
+      alignSelf: 'center',
+    },
+    input: {
+      backgroundColor: colors.card,
+      color: colors.text,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 16,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    card: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      padding: 16,
+      marginBottom: 12,
+    },
+    number: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: colors.primary,
+      width: 60,
+    },
+    info: {
+      flex: 1,
+    },
+    name: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: colors.text,
+    },
+    stops: {
+      color: colors.subtext,
+      marginTop: 4,
+    },
+    empty: {
+      textAlign: 'center',
+      color: colors.subtext,
+      marginTop: 40,
+    },
+  });
+}

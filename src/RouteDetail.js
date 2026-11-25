@@ -1,10 +1,12 @@
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { routes, getEta, nextIndex } from './data';
+import { useColors } from './theme';
 
 export default function RouteDetail({ route, navigation }) {
   const bus = routes.find((item) => item.id === route.params.id);
   const [busIndex, setBusIndex] = useState(0);
+  const styles = getStyles(useColors());
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: bus ? 'Bus ' + bus.number : 'Bus not found' });
@@ -49,60 +51,63 @@ export default function RouteDetail({ route, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    width: '100%',
-    maxWidth: 600,
-    alignSelf: 'center',
-  },
-  subtitle: {
-    color: '#555',
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  status: {
-    backgroundColor: '#1e88e5',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 16,
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  stopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 8,
-  },
-  dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: '#ccc',
-    marginRight: 12,
-  },
-  activeDot: {
-    backgroundColor: '#43a047',
-  },
-  passedDot: {
-    backgroundColor: '#999',
-  },
-  stopName: {
-    flex: 1,
-    fontSize: 16,
-  },
-  passedText: {
-    color: '#999',
-  },
-  eta: {
-    color: '#333',
-    fontWeight: '600',
-  },
-});
+function getStyles(colors) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      width: '100%',
+      maxWidth: 600,
+      alignSelf: 'center',
+    },
+    subtitle: {
+      color: colors.subtext,
+      fontSize: 16,
+      marginBottom: 16,
+    },
+    status: {
+      backgroundColor: colors.primary,
+      borderRadius: 10,
+      padding: 14,
+      marginBottom: 16,
+    },
+    statusText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    stopRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      padding: 14,
+      marginBottom: 8,
+    },
+    dot: {
+      width: 14,
+      height: 14,
+      borderRadius: 7,
+      backgroundColor: colors.dot,
+      marginRight: 12,
+    },
+    activeDot: {
+      backgroundColor: colors.green,
+    },
+    passedDot: {
+      backgroundColor: colors.muted,
+    },
+    stopName: {
+      flex: 1,
+      fontSize: 16,
+      color: colors.text,
+    },
+    passedText: {
+      color: colors.muted,
+    },
+    eta: {
+      color: colors.text,
+      fontWeight: '600',
+    },
+  });
+}
