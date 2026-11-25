@@ -55,3 +55,13 @@ test('tells how long until the bus reaches your stop', () => {
   expect(getStopMessage(1, 1, 4)).toBe('Bus is at your stop');
   expect(getStopMessage(0, 1, 4)).toBe('Bus has passed your stop');
 });
+
+test('every stop has a name and location', () => {
+  routes.forEach((route) => {
+    route.stops.forEach((stop) => {
+      expect(stop.name).toBeTruthy();
+      expect(typeof stop.lat).toBe('number');
+      expect(typeof stop.lng).toBe('number');
+    });
+  });
+});

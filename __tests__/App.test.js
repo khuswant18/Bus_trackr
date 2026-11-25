@@ -160,3 +160,16 @@ test('sends an alert when the bus is one stop away', async () => {
     trigger: null,
   });
 });
+
+test('shows and hides the map', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByText('University - Airport'));
+
+  expect(screen.queryByTestId('route-map')).toBeNull();
+
+  await fireEvent.press(screen.getByText('Show map'));
+  expect(screen.getByTestId('route-map')).toBeTruthy();
+
+  await fireEvent.press(screen.getByText('Hide map'));
+  expect(screen.queryByTestId('route-map')).toBeNull();
+});

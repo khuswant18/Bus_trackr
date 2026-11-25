@@ -5,6 +5,7 @@ import { useRoutes } from './RoutesContext';
 import { fetchBusIndex } from './api';
 import { askForAlerts, sendAlert } from './alerts';
 import { useColors } from './theme';
+import RouteMap from './RouteMap';
 
 export default function RouteDetail({ route, navigation }) {
   const { routes, offline } = useRoutes();
@@ -12,6 +13,7 @@ export default function RouteDetail({ route, navigation }) {
   const [busIndex, setBusIndex] = useState(0);
   const [reversed, setReversed] = useState(false);
   const [myStop, setMyStop] = useState(null);
+  const [showMap, setShowMap] = useState(false);
   const styles = getStyles(useColors());
 
   useLayoutEffect(() => {
@@ -43,7 +45,7 @@ export default function RouteDetail({ route, navigation }) {
 
   const allStops = bus ? bus.stops : [];
   const stops = reversed ? [...allStops].reverse() : allStops;
-  const myIndex = stops.indexOf(myStop);
+  const myIndex = stops.findIndex((stop) => stop.name === myStop);
 
   useEffect(() => {
     if (myIndex >= 0 && myIndex - busIndex === 1) {
@@ -76,19 +78,25 @@ export default function RouteDetail({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <Text style={styles.subtitle}>{bus.name}</Text>
 
       <View style={styles.directionRow}>
-        <Text style={styles.direction}>Towards {stops[stops.length - 1]}</Text>
+        <Text style={styles.direction}>Towards {stops[stops.length - 1].name}</Text>
         <TouchableOpacity style={styles.switchButton} onPress={switchDirection}>
           <Text style={styles.switchText}>Switch direction</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.status}>
-        <Text style={styles.statusText}>Now at: {stops[busIndex]}</Text>
+        <Text style={styles.statusText}>Now at: {stops[busIndex].name}</Text>
       </View>
+
+      <TouchableOpacity style={styles.mapButton} onPress={() => setShowMap(!showMap)}>
+        <Text style={styles.switchText}>{showMap ? 'Hide map' : 'Show map'}</Text>
+      </TouchableOpacity>
+
+      {showMap && <RouteMap stops={stops} busIndex={busIndex} />}
 
       {myIndex >= 0 ? (
         <View style={styles.myStop}>
@@ -100,7 +108,7 @@ export default function RouteDetail({ route, navigation }) {
       )}
 
       <View style={styles.timetable}>
-        <Text style={styles.timetableTitle}>Next buses from {stops[0]}</Text>
+        <Text style={styles.timetableTitle}>Next buses from {stops[0].name}</Text>
         <Text style={styles.timetableText}>
           {nextBuses.length > 0 ? nextBuses.join('   ') : 'No more buses today'}
         </Text>
@@ -109,27 +117,29 @@ export default function RouteDetail({ route, navigation }) {
         </Text>
       </View>
 
-      <ScrollView>
+      <View>
         {stops.map((stop, index) => (
           <TouchableOpacity
-            key={stop}
-            style={[styles.stopRow, stop === myStop && styles.myStopRow]}
-            onPress={() => pickStop(stop)}
+            key={stop.name}
+            style={[styles.stopRow, stop.name === myStop && styles.myStopRow]}
+            onPress={() => pickStop(stop.name)}
           >
             <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
-            <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
+            <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop.name}</Text>
             <Text style={styles.eta}>{getEta(index, busIndex, bus.minutesPerStop)}</Text>
           </TouchableOpacity>
         ))}
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 function getStyles(colors) {
   return StyleSheet.create({
-    container: {
+    screen: {
       flex: 1,
+    },
+    container: {
       padding: 16,
       width: '100%',
       maxWidth: 600,
@@ -162,6 +172,14 @@ function getStyles(colors) {
     switchText: {
       color: colors.primary,
       fontWeight: '600',
+    },
+    mapButton: {
+      borderWidth: 1,
+      borderColor: colors.primary,
+      borderRadius: 8,
+      padding: 10,
+      alignItems: 'center',
+      marginBottom: 16,
     },
     status: {
       backgroundColor: colors.primary,

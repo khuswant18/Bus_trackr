@@ -7,7 +7,13 @@
     "firstBus": "06:00",
     "lastBus": "22:00",
     "every": 15,
-    "stops": ["City Center", "Main Market", "Clock Tower", "Bus Stand", "Railway Station"]
+    "stops": [
+      { "name": "City Center", "lat": 26.9124, "lng": 75.7873 },
+      { "name": "Main Market", "lat": 26.92, "lng": 75.795 },
+      { "name": "Clock Tower", "lat": 26.926, "lng": 75.803 },
+      { "name": "Bus Stand", "lat": 26.933, "lng": 75.81 },
+      { "name": "Railway Station", "lat": 26.94, "lng": 75.818 }
+    ]
   },
   {
     "id": "2",
@@ -17,7 +23,13 @@
     "firstBus": "05:30",
     "lastBus": "23:30",
     "every": 30,
-    "stops": ["University", "Hospital", "Tech Park", "Highway Gate", "Airport"]
+    "stops": [
+      { "name": "University", "lat": 26.89, "lng": 75.81 },
+      { "name": "Hospital", "lat": 26.88, "lng": 75.8 },
+      { "name": "Tech Park", "lat": 26.865, "lng": 75.79 },
+      { "name": "Highway Gate", "lat": 26.85, "lng": 75.795 },
+      { "name": "Airport", "lat": 26.824, "lng": 75.812 }
+    ]
   },
   {
     "id": "3",
@@ -27,6 +39,11 @@
     "firstBus": "07:00",
     "lastBus": "21:00",
     "every": 20,
-    "stops": ["Old Town", "Temple Road", "Park Street", "Lake View"]
+    "stops": [
+      { "name": "Old Town", "lat": 26.925, "lng": 75.825 },
+      { "name": "Temple Road", "lat": 26.935, "lng": 75.835 },
+      { "name": "Park Street", "lat": 26.945, "lng": 75.842 },
+      { "name": "Lake View", "lat": 26.955, "lng": 75.846 }
+    ]
   }
 ]

@@ -10,3 +10,10 @@ jest.mock('expo-notifications', () => ({
   getPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
   scheduleNotificationAsync: jest.fn(() => Promise.resolve()),
 }));
+
+jest.mock('react-native-maps', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const Mock = (props) => React.createElement(View, props);
+  return { __esModule: true, default: Mock, Marker: Mock, Polyline: Mock };
+});
