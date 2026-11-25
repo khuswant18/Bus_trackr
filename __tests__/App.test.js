@@ -1,10 +1,12 @@
 import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import App from '../App';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import routes from '../src/routes.json';
 
 beforeEach(async () => {
   await AsyncStorage.clear();
+  Notifications.scheduleNotificationAsync.mockClear();
   jest.useFakeTimers();
   fetch.mockImplementation(() => Promise.reject(new Error('offline')));
 });
@@ -139,4 +141,22 @@ test('picking a stop shows when the bus arrives there', async () => {
   await fireEvent.press(screen.getByText('Bus Stand'));
 
   expect(screen.queryByText('Your stop: Bus Stand')).toBeNull();
+});
+
+test('sends an alert when the bus is one stop away', async () => {
+  await render(<App />);
+  await fireEvent.press(screen.getByText('City Center - Railway Station'));
+  await fireEvent.press(screen.getByText('Clock Tower'));
+
+  expect(Notifications.requestPermissionsAsync).toHaveBeenCalled();
+  expect(Notifications.scheduleNotificationAsync).not.toHaveBeenCalled();
+
+  await act(() => {
+    jest.advanceTimersByTime(5000);
+  });
+
+  expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
+    content: { title: 'Bus 12A is almost here', body: 'Next stop is Clock Tower' },
+    trigger: null,
+  });
 });

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { getEta, nextIndex, getNextBuses, getStopMessage } from './data';
 import { useRoutes } from './RoutesContext';
 import { fetchBusIndex } from './api';
+import { askForAlerts, sendAlert } from './alerts';
 import { useColors } from './theme';
 
 export default function RouteDetail({ route, navigation }) {
@@ -40,6 +41,16 @@ export default function RouteDetail({ route, navigation }) {
     return () => clearInterval(timer);
   }, [bus, offline]);
 
+  const allStops = bus ? bus.stops : [];
+  const stops = reversed ? [...allStops].reverse() : allStops;
+  const myIndex = stops.indexOf(myStop);
+
+  useEffect(() => {
+    if (myIndex >= 0 && myIndex - busIndex === 1) {
+      sendAlert('Bus ' + bus.number + ' is almost here', 'Next stop is ' + myStop);
+    }
+  }, [busIndex, myIndex]);
+
   if (!bus) {
     return (
       <View style={styles.container}>
@@ -48,9 +59,16 @@ export default function RouteDetail({ route, navigation }) {
     );
   }
 
-  const stops = reversed ? [...bus.stops].reverse() : bus.stops;
   const nextBuses = getNextBuses(bus, new Date());
-  const myIndex = stops.indexOf(myStop);
+
+  function pickStop(stop) {
+    if (stop === myStop) {
+      setMyStop(null);
+    } else {
+      setMyStop(stop);
+      askForAlerts();
+    }
+  }
 
   function switchDirection() {
     setReversed(!reversed);
@@ -96,7 +114,7 @@ export default function RouteDetail({ route, navigation }) {
           <TouchableOpacity
             key={stop}
             style={[styles.stopRow, stop === myStop && styles.myStopRow]}
-            onPress={() => setMyStop(stop === myStop ? null : stop)}
+            onPress={() => pickStop(stop)}
           >
             <View style={[styles.dot, index === busIndex && styles.activeDot, index < busIndex && styles.passedDot]} />
             <Text style={[styles.stopName, index < busIndex && styles.passedText]}>{stop}</Text>
