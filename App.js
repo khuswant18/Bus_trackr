@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import RouteList from './src/RouteList';
 import RouteDetail from './src/RouteDetail';
 
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#1e88e5',
-    paddingTop: 50,
+    paddingTop: Platform.OS === 'web' ? 16 : 50,
     paddingBottom: 16,
     paddingHorizontal: 16,
   },
